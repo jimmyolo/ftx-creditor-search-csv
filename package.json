@@ -8,7 +8,7 @@
   },
   "author": "Jimmy Huang",
   "dependencies": {
-    "inquirer": "^9.1.5"
+    "inquirer": "^8.2.5"
   },
   "devDependencies": {
     "nexec": "^1.3.0"
