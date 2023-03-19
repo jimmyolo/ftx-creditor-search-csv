@@ -17,12 +17,11 @@ module.exports = () => {
 
     const rl = readline.createInterface({
       input: fs.createReadStream(csvPath),
-      crlfDelay: Infinity
+      crlfDelay: Infinity,
     })
 
-    let lines = 0
-    let users = new Map()
-    let tokenSet = new Set()
+    const users = new Map()
+    const tokenSet = new Set()
 
     const parseAssets = (cid = '', assets = '') => {
       // if (['01613473', '06786371'].includes(cid)) {
@@ -49,7 +48,6 @@ module.exports = () => {
       let unfinished = ''
 
       return (l) => {
-        lines++
         l = l.trim()
         if (!l) return
 
@@ -82,7 +80,7 @@ module.exports = () => {
           cid = ''
           return
         }
-  
+
         if (l.startsWith('Customer')) return
 
         const comma = l.indexOf(',')
@@ -100,12 +98,10 @@ module.exports = () => {
       }
     })()
 
-
     rl.on('line', onLine)
     rl.on('close', () => {
       // console.log('EOF')
       // console.log({
-      //   lines,
       //   users: users.size,
       //   tokenSet: tokenSet,
       // })

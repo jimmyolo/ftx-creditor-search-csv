@@ -3,14 +3,19 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "author": "Jimmy Huang",
   "dependencies": {
     "inquirer": "^8.2.5"
   },
   "devDependencies": {
+    "eslint-config-jimmy": "^0.1.2",
     "nexec": "^1.3.0"
   }
 }
