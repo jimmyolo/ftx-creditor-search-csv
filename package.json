@@ -13,8 +13,10 @@
   "author": "Jimmy Huang",
   "dependencies": {
     "@cz-git/inquirer": "^1.6.0",
+    "fs-extra": "^11.1.1",
     "inquirer": "^8.2.5",
-    "inquirer-search-list": "^1.2.6"
+    "inquirer-search-list": "^1.2.6",
+    "prompts": "^2.4.2"
   },
   "devDependencies": {
     "eslint-config-jimmy": "^0.1.2",

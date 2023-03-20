@@ -1,5 +1,7 @@
 'use strict'
 
+const path = require('node:path')
+
 const load = require('./load.js')
 
 const inquirer = require('inquirer')
@@ -7,22 +9,21 @@ const { SearchList, fuzzyFilter } = require("@cz-git/inquirer")
 inquirer.registerPrompt('search-list', SearchList)
 
 const main = async () => {
-  const _filenameAnswers = await inquirer.prompt([{
+  const { fileOrDirectory } = await inquirer.prompt([{
     type: 'input',
-    name: 'filename',
-    message: 'Enter csv filename',
-    default: 'ftx_all.csv',
+    name: 'fileOrDirectory',
+    message: 'Enter csv filepath or directory',
+    default: path.join('./csv'),
     // transformer: (filename) => {
     //   return filename.trim().replace(/\.csv/ig, '') + '.csv'
     // }
   }])
 
-  const filename = _filenameAnswers.filename.trim().replace(/\.csv/ig, '') + '.csv'
   const {
     users,
     tokenSet,
     incomplete
-  } = await load(filename)
+  } = await load(fileOrDirectory)
 
   console.log('loaded', users.size, 'users')
   console.log('loaded', tokenSet.size, 'tokens')

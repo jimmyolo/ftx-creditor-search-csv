@@ -1,10 +1,10 @@
 'use strict'
 
 const readline = require('node:readline')
-const fs = require('node:fs')
+const fs = require('fs-extra')
 const path = require('node:path')
 
-module.exports = (filename = 'ftx_all.csv') => {
+const loadFile = (filename = 'ftx_all.csv') => {
   const users = new Map()
   const tokenSet = new Set()
   const incomplete = new Map()
@@ -34,7 +34,9 @@ module.exports = (filename = 'ftx_all.csv') => {
       if (isIncomplete) incomplete.set(cid, assets)
 
       tokens.forEach(t => {
-        const token = t.match(/(?<name>\w+)(\((?<nft>\w+)\))?\[(?<vol>[+-]?\d+(\.\d+)?)\]/)?.groups || {}
+        // NFT (395640136040522434)[1]
+        // LOCKED_MAPS_STRIKE-0.07_VEST-2030[2000.0000000000000000]
+        const token = t.match(/(?<name>[\w-.]+)(\((?<nft>\w+)\))?\[(?<vol>[+-]?\d+(\.\d+)?)\]/)?.groups || {}
         if (token.name) {
           tokenSet.add(token.name)
         }
@@ -142,4 +144,26 @@ module.exports = (filename = 'ftx_all.csv') => {
       resolve({ users, tokenSet, incomplete })
     })
   })
+}
+
+module.exports = async (fileOrDirectory = 'ftx_all.csv') => {
+  try {
+    const lstat = await fs.lstat(path.join(__dirname, fileOrDirectory))
+    if (lstat.isFile()) {
+      return loadFile(fileOrDirectory)
+    }
+
+    return fs.readdir(fileOrDirectory).then(files => {
+      return Promise.all(files.map(f => loadFile(path.join(fileOrDirectory, f)))).then(results => {
+        return results.reduce((acc, { users, tokenSet, incomplete }) => {
+          users.forEach((v, k) => acc.users.set(k, v))
+          tokenSet.forEach(t => acc.tokenSet.add(t))
+          incomplete.forEach((v, k) => acc.incomplete.set(k, v))
+          return acc
+        }, { users: new Map(), tokenSet: new Set(), incomplete: new Map() })
+      })
+    })
+  } catch (err) {
+    console.error(err)
+  }
 }
