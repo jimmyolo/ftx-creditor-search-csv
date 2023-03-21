@@ -103,10 +103,7 @@ const main = async () => {
     users,
     tokenSet,
     incomplete,
-  } = await load(fileOrDirectory).catch(err => {
-    console.error(err)
-    return main()
-  })
+  } = await load(fileOrDirectory)
 
   console.log('loaded', users.size, 'users')
   console.log('loaded', tokenSet.size, 'tokens')
@@ -132,4 +129,8 @@ const main = async () => {
 
   await startSearchPrompts(users, tokensForFilter)
 }
-main()
+
+main().catch(err => {
+  console.error(err)
+  return main()
+})
