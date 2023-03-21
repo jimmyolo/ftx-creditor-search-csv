@@ -64,7 +64,7 @@ const loadFile = (filename = 'ftx_all.csv') => {
       if (_isCID(id)) {
         return {
           id,
-          assets: `${isLeadingQuote ? '"' : ''}${l.slice(space + 1)}`
+          assets: `${isLeadingQuote ? '"' : ''}${l.slice(space + 1)}`,
         }
       }
 
@@ -83,7 +83,7 @@ const loadFile = (filename = 'ftx_all.csv') => {
           // incomplete assets... too long?
           // example:
           // 00334864,"ATOM[0.0843200000000000],BCH[0.0000000055000000],BTC[0.0000000019256250],BULL[0.0000042137540000],COPE[0.1553700000000000],CREAM[0.0000000025000000],ETH[0.0000000026000000],FTT[1474.9691854382876185],HOOD[0.0000000100000000],HOOD_PRE[-
-          let { id, assets } = _parseNextUser(l)
+          const { id, assets } = _parseNextUser(l)
           if (_isCID(id)) {
             parseAssets(cid, unfinished, true)
             unfinished = ''
@@ -114,7 +114,7 @@ const loadFile = (filename = 'ftx_all.csv') => {
         // const comma = l.indexOf(',')
         // const id = cid = l.slice(0, comma)
         // const assets = l.slice(comma + 1) || ''
-        let { id, assets } = _parseNextUser(l)
+        const { id, assets } = _parseNextUser(l)
         cid = id
         if (!assets) {
           console.log('no assets', { id, assets, line: l })
@@ -147,23 +147,19 @@ const loadFile = (filename = 'ftx_all.csv') => {
 }
 
 module.exports = async (fileOrDirectory = 'ftx_all.csv') => {
-  try {
-    const lstat = await fs.lstat(path.join(__dirname, fileOrDirectory))
-    if (lstat.isFile()) {
-      return loadFile(fileOrDirectory)
-    }
-
-    return fs.readdir(fileOrDirectory).then(files => {
-      return Promise.all(files.map(f => loadFile(path.join(fileOrDirectory, f)))).then(results => {
-        return results.reduce((acc, { users, tokenSet, incomplete }) => {
-          users.forEach((v, k) => acc.users.set(k, v))
-          tokenSet.forEach(t => acc.tokenSet.add(t))
-          incomplete.forEach((v, k) => acc.incomplete.set(k, v))
-          return acc
-        }, { users: new Map(), tokenSet: new Set(), incomplete: new Map() })
-      })
-    })
-  } catch (err) {
-    console.error(err)
+  const lstat = await fs.lstat(path.join(__dirname, fileOrDirectory))
+  if (lstat.isFile()) {
+    return loadFile(fileOrDirectory)
   }
+
+  return fs.readdir(fileOrDirectory).then(files => {
+    return Promise.all(files.map(f => loadFile(path.join(fileOrDirectory, f)))).then(results => {
+      return results.reduce((acc, { users, tokenSet, incomplete }) => {
+        users.forEach((v, k) => acc.users.set(k, v))
+        tokenSet.forEach(t => acc.tokenSet.add(t))
+        incomplete.forEach((v, k) => acc.incomplete.set(k, v))
+        return acc
+      }, { users: new Map(), tokenSet: new Set(), incomplete: new Map() })
+    })
+  })
 }
