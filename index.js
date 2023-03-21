@@ -39,6 +39,7 @@ const startSearchPrompts = async (users, choices) => {
   const usersFilterByToken = _search(Array.from(users), pickedTokens)
   console.log('found', usersFilterByToken.length, 'users')
 
+  let searchResults = usersFilterByToken
   while (true) {
     const { action } = await inquirer.prompt([{
       type: 'expand',
@@ -55,7 +56,7 @@ const startSearchPrompts = async (users, choices) => {
     if (action === 'q') break
 
     if (action === 's') {
-      console.log(usersFilterByToken)
+      console.log(searchResults)
       continue
     }
 
@@ -84,6 +85,7 @@ const startSearchPrompts = async (users, choices) => {
       console.log('searchTargets', searchTargets)
       const usersFilterByTokenAndVol = _search(usersFilterByToken, searchTargets)
       console.log('found', usersFilterByTokenAndVol.length, 'users')
+      searchResults = usersFilterByTokenAndVol
     }
   }
 }
