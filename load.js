@@ -10,7 +10,7 @@ const loadFile = (filename = 'ftx_all.csv') => {
   const incomplete = new Map()
 
   return new Promise((resolve, reject) => {
-    const csvPath = path.join(__dirname, filename)
+    const csvPath = path.resolve(filename)
     console.log('loading csv file: ', csvPath)
     try {
       fs.lstatSync(csvPath)
@@ -147,7 +147,7 @@ const loadFile = (filename = 'ftx_all.csv') => {
 }
 
 module.exports = async (fileOrDirectory = 'ftx_all.csv') => {
-  const lstat = await fs.lstat(path.join(__dirname, fileOrDirectory))
+  const lstat = await fs.lstat(path.resolve(fileOrDirectory))
   if (lstat.isFile()) {
     return loadFile(fileOrDirectory)
   }
